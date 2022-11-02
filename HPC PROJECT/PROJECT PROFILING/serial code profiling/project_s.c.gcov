@@ -1,0 +1,182 @@
+        -:    0:Source:project_s.c
+        -:    0:Graph:project_s.gcno
+        -:    0:Data:project_s.gcda
+        -:    0:Runs:2
+        -:    1:#include <stdio.h>
+        -:    2:#include <stdlib.h>
+        -:    3:#include <omp.h>
+        -:    4:
+        -:    5:#define ORGS 10000
+        -:    6:#define GENES 50
+        -:    7:#define ALLELES 4
+        -:    8:#define MUT 1000
+        -:    9:
+        -:   10:char **curG, **nextG, *mod;
+        -:   11:int *f, totF, Eval(), Run();
+        -:   12:void Mem(), Init(), Gen();
+        -:   13:
+function main called 2 returned 100% blocks executed 100%
+        2:   14:int main(){
+        2:   15:  float pTime = omp_get_wtime();
+call    0 returned 2
+        2:   16:  Mem();
+call    0 returned 2
+        2:   17:  printf("The final generation was: %d\n", Run());
+call    0 returned 2
+call    1 returned 2
+        2:   18:  float cTime = omp_get_wtime();
+call    0 returned 2
+        2:   19:  printf("%f",cTime-pTime);}
+call    0 returned 2
+        -:   20:
+        -:   21:// Initialize Memory Function
+function Mem called 2 returned 100% blocks executed 100%
+        2:   22:void Mem(){
+        -:   23:	int o;
+        2:   24:	curG=(char**)malloc(sizeof(char*)*ORGS);
+        2:   25:	nextG=(char**)malloc(sizeof(char*)*ORGS);
+        2:   26:	mod=(char*)malloc(sizeof(char)*GENES);
+        2:   27:	f=(int*)malloc(sizeof(int)*ORGS);
+        -:   28:
+    20002:   29:	for(o=0; o<ORGS; ++o){
+branch  0 taken 20000
+branch  1 taken 2 (fallthrough)
+    20000:   30:		curG[o]=(char*)malloc(sizeof(char)*GENES);
+    20000:   31:		nextG[o]=(char*)malloc(sizeof(char)*GENES);
+        -:   32:	}
+        2:   33:}
+        -:   34:
+        -:   35:// Run Function
+function Run called 2 returned 100% blocks executed 89%
+        2:   36:int Run(){
+        2:   37:	int gen=0;
+        2:   38:	Init();
+call    0 returned 2
+      164:   39:	while(++gen) {
+branch  0 taken 164
+branch  1 taken 0 (fallthrough)
+      164:   40:		if(Eval()) {
+call    0 returned 164
+branch  1 taken 2 (fallthrough)
+branch  2 taken 162
+        2:   41:			return gen;
+        -:   42:		}
+      162:   43:		Gen();
+call    0 returned 162
+        -:   44:	}
+    #####:   45:}
+        -:   46:
+        -:   47:// Initialization Function
+function Init called 2 returned 100% blocks executed 100%
+        2:   48:void Init(){
+        -:   49:	int o, g;
+    20002:   50:	for(o=0; o<ORGS; o++) {
+branch  0 taken 20000
+branch  1 taken 2 (fallthrough)
+  1020000:   51:		for(g=0; g<GENES; g++) {
+branch  0 taken 1000000
+branch  1 taken 20000 (fallthrough)
+  1000000:   52:			curG[o][g]=rand()%ALLELES;
+call    0 returned 1000000
+        -:   53:		}
+        -:   54:	}	
+      102:   55:	for(g=0; g<GENES; g++){
+branch  0 taken 100
+branch  1 taken 2 (fallthrough)
+      100:   56:		mod[g]=rand()%ALLELES;
+call    0 returned 100
+        -:   57:	}
+        2:   58:}
+        -:   59:
+        -:   60:// Evaluation Function
+function Eval called 164 returned 100% blocks executed 100%
+      164:   61:int Eval(){
+        -:   62:	int o, g, curF;
+  1621572:   63:	for(totF=0, o=0; o<ORGS; ++o) {
+branch  0 taken 1621410
+branch  1 taken 162 (fallthrough)
+ 82691910:   64:		for(curF=0, g=0; g<GENES; ++g) {
+branch  0 taken 81070500
+branch  1 taken 1621410 (fallthrough)
+ 81070500:   65:			if(curG[o][g]==mod[g]) {
+branch  0 taken 48558492 (fallthrough)
+branch  1 taken 32512008
+ 48558492:   66:				++curF;
+        -:   67:			}
+        -:   68:		}
+  1621410:   69:		if(curF==GENES) { 
+branch  0 taken 2 (fallthrough)
+branch  1 taken 1621408
+        2:   70:			return 1;
+        -:   71:		}
+  1621408:   72:		totF += f[o]=curF;
+        -:   73:	}
+      162:   74:	return 0;
+        -:   75:}
+        -:   76:
+        -:   77:// Generation Function
+function Gen called 162 returned 100% blocks executed 100%
+      162:   78:void Gen(){
+        -:   79:	int o, g, p1, p2, cp;
+        -:   80:	int o1,o2, tot,pt;
+  1620162:   81:	for(o=0;o<ORGS;++o) {
+branch  0 taken 1620000
+branch  1 taken 162 (fallthrough)
+  1620000:   82:		tot = 0; pt = rand()%(totF+1);
+call    0 returned 1620000
+        -:   83:		
+8101589478:   84:		for(o1 = 0; o1 < ORGS; ++o1){
+branch  0 taken 8101589478
+branch  1 taken 0 (fallthrough)
+8101589478:   85:			if((tot += f[o1]) >= pt) {
+branch  0 taken 1620000 (fallthrough)
+branch  1 taken 8099969478
+  1620000:   86:				p1 = o1;
+  1620000:   87:				break;
+        -:   88:			}
+        -:   89:		}
+  1620000:   90:		tot = 0; pt = rand() % (1+totF);
+call    0 returned 1620000
+8111265174:   91:		for(o2 = 0; o2 < ORGS; ++o2){
+branch  0 taken 8111265174
+branch  1 taken 0 (fallthrough)
+8111265174:   92:			if((tot += f[o2]) >= pt) {
+branch  0 taken 1620000 (fallthrough)
+branch  1 taken 8109645174
+  1620000:   93:				p2 = o2;
+  1620000:   94:				break;
+        -:   95:			}
+        -:   96:		}
+        -:   97:
+ 82620000:   98:		for(p1, p2, cp = rand() % GENES, g = 0; g < GENES; ++g) {
+call    0 returned 1620000
+branch  1 taken 81000000
+branch  2 taken 1620000 (fallthrough)
+ 81000000:   99:			if(rand()%MUT) {
+call    0 returned 81000000
+branch  1 taken 80918350 (fallthrough)
+branch  2 taken 81650
+ 80918350:  100:				if(g<cp) {
+branch  0 taken 39666854 (fallthrough)
+branch  1 taken 41251496
+ 39666854:  101:					nextG[o][g] = curG[p1][g];
+        -:  102:				} else {
+ 41251496:  103:					nextG[o][g] = curG[p2][g];
+        -:  104:				}
+        -:  105:			} else {
+    81650:  106:				nextG[o][g] = rand()%ALLELES;
+call    0 returned 81650
+        -:  107:			}
+        -:  108:		}
+        -:  109:	}
+        -:  110:
+  1620162:  111:	for(o=0; o<ORGS; ++o) {
+branch  0 taken 1620000
+branch  1 taken 162 (fallthrough)
+ 82620000:  112:		for(g=0; g<GENES; ++g) { 
+branch  0 taken 81000000
+branch  1 taken 1620000 (fallthrough)
+ 81000000:  113:			curG[o][g]=nextG[o][g];
+        -:  114:		}
+        -:  115:	}
+      162:  116:}

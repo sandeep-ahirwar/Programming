@@ -77,24 +77,24 @@ int Eval(){
 // Generation Function
 void Gen(){
 	int o, g, p1, p2, cp;
-	#pragma omp parallel for
+	int o1,o2, tot,pt;
 	for(o=0;o<ORGS;++o) {
-		int tot = 0, pt = rand()%(totF+1);
+		tot = 0; pt = rand()%(totF+1);
 		
-		for(int o1 = 0; o1 < ORGS; ++o1){
+		for(o1 = 0; o1 < ORGS; ++o1){
 			if((tot += f[o1]) >= pt) {
 				p1 = o1;
 				break;
 			}
 		}
 		tot = 0; pt = rand() % (1+totF);
-		for(int o2 = 0; o2 < ORGS; ++o2){
+		for(o2 = 0; o2 < ORGS; ++o2){
 			if((tot += f[o2]) >= pt) {
 				p2 = o2;
 				break;
 			}
 		}
-		
+
 		for(p1, p2, cp = rand() % GENES, g = 0; g < GENES; ++g) {
 			if(rand()%MUT) {
 				if(g<cp) {
@@ -114,4 +114,3 @@ void Gen(){
 		}
 	}
 }
-
